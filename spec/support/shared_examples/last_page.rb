@@ -19,6 +19,10 @@ shared_examples 'an endpoint with a last page' do
     expect(total).to eq(100)
   end
 
+  it 'should not give a Next-Page header' do
+    expect(response.headers.keys).not_to include('Next-Page')
+  end
+
   it 'should list the last page of numbers in the response body' do
     body = '[91,92,93,94,95,96,97,98,99,100]'
 

@@ -47,16 +47,22 @@ module Rails
       headers[per_page_header] = options[:per_page].to_s
       headers[page_header] = options[:page].to_s unless page_header.nil?
       headers[total_header] = total_count(collection, options).to_s if include_total
+      calc_remaining_pages(options)
+      headers['Next-Page'] = (options[:page] + 1).to_s if @remining.positive?
 
       return collection
     end
 
     def total_count(collection, options)
-      total_count = if ApiPagination.config.paginator == :kaminari
+      @total_count = if ApiPagination.config.paginator == :kaminari
         paginate_array_options = options[:paginate_array_options]
         paginate_array_options[:total_count] if paginate_array_options
       end
-      total_count || ApiPagination.total_from(collection)
+      @total_count ||= ApiPagination.total_from(collection)
+    end
+
+    def calc_remaining_pages(options)
+      @remining = (@total_count.to_f / options[:per_page].to_f) - options[:page]
     end
   end
 end
