@@ -11,12 +11,14 @@ describe NumbersController, :type => :controller do
     let(:links) { response.headers['Link'].split(', ') }
     let(:total) { response.headers['Total'].to_i }
     let(:per_page) { response.headers['Per-Page'].to_i }
+    let(:next_page) { response.headers['Next-Page'].to_i }
 
     context 'without enough items to give more than one page' do
       before { get :index, params: {count: 10} }
 
       it 'should not paginate' do
         expect(response.headers.keys).not_to include('Link')
+        expect(response.headers.keys).not_to include('Next-Page')
       end
 
       it 'should give a Total header' do

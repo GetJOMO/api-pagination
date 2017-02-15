@@ -9,12 +9,14 @@ describe NumbersAPI do
     let(:links) { last_response.headers['Link'].split(', ') }
     let(:total) { last_response.headers['Total'].to_i }
     let(:per_page) { last_response.headers['Per-Page'].to_i }
+    let(:next_page) { last_response.headers['Next-Page'].to_i }
 
     context 'without enough items to give more than one page' do
       before { get '/numbers', :count => 10 }
 
       it 'should not paginate' do
         expect(last_response.headers.keys).not_to include('Link')
+        expect(last_response.headers.keys).not_to include('Next-Page')
       end
 
       it 'should give a Total header' do

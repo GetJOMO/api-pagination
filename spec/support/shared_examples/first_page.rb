@@ -1,6 +1,4 @@
 shared_examples 'an endpoint with a first page' do
-  let(:next_page) { response.headers['Next-Page'].to_i }
-
   it 'should not give a link with rel "first"' do
     expect(links).not_to include('rel="first"')
   end
@@ -15,10 +13,6 @@ shared_examples 'an endpoint with a first page' do
 
   it 'should give a link with rel "next"' do
     expect(links).to include('<http://example.org/numbers?count=100&page=2>; rel="next"')
-  end
-
-  it 'should give a Next-Page header' do
-    expect(response.headers.keys).to include('Next-Page')
   end
 
   it 'should give a Next-Page header value' do

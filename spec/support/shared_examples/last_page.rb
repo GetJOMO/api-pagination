@@ -20,7 +20,11 @@ shared_examples 'an endpoint with a last page' do
   end
 
   it 'should not give a Next-Page header' do
-    expect(response.headers.keys).not_to include('Next-Page')
+    if defined?(response)
+      expect(response.headers.keys).not_to include('Next-Page')
+    else
+      expect(last_response.headers.keys).not_to include('Next-Page')
+    end
   end
 
   it 'should list the last page of numbers in the response body' do

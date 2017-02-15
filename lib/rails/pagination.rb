@@ -38,31 +38,27 @@ module Rails
         links << %(<#{url}?#{new_params.to_param}>; rel="#{k}")
       end
 
-      total_header    = ApiPagination.config.total_header
-      per_page_header = ApiPagination.config.per_page_header
-      page_header     = ApiPagination.config.page_header
-      include_total   = ApiPagination.config.include_total
+      total_header      = ApiPagination.config.total_header
+      per_page_header   = ApiPagination.config.per_page_header
+      page_header       = ApiPagination.config.page_header
+      include_total     = ApiPagination.config.include_total
+      next_page_header  = ApiPagination.config.next_page_header
 
       headers['Link'] = links.join(', ') unless links.empty?
       headers[per_page_header] = options[:per_page].to_s
       headers[page_header] = options[:page].to_s unless page_header.nil?
       headers[total_header] = total_count(collection, options).to_s if include_total
-      calc_remaining_pages(options)
-      headers['Next-Page'] = (options[:page] + 1).to_s if @remining.positive?
+      headers[next_page_header] = pages[:next].to_s unless pages[:next].nil?
 
       return collection
     end
 
     def total_count(collection, options)
-      @total_count = if ApiPagination.config.paginator == :kaminari
+      total_count = if ApiPagination.config.paginator == :kaminari
         paginate_array_options = options[:paginate_array_options]
         paginate_array_options[:total_count] if paginate_array_options
       end
-      @total_count ||= ApiPagination.total_from(collection)
-    end
-
-    def calc_remaining_pages(options)
-      @remining = (@total_count.to_f / options[:per_page].to_f) - options[:page]
+      total_count || ApiPagination.total_from(collection)
     end
   end
 end

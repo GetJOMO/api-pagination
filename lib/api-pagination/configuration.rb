@@ -6,6 +6,8 @@ module ApiPagination
 
     attr_accessor :page_header
 
+    attr_accessor :next_page_header
+
     attr_accessor :include_total
 
     def configure(&block)
@@ -16,6 +18,7 @@ module ApiPagination
       @total_header    = 'Total'
       @per_page_header = 'Per-Page'
       @page_header     = nil
+      @next_page_header = 'Next-Page'
       @include_total   = true
     end
 
