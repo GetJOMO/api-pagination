@@ -25,7 +25,7 @@ module ApiPagination
           pages[:prev]  = collection.current_page - 1
         end
 
-        unless collection.last_page?
+        unless collection.last_page? || (ApiPagination.config.paginator == :kaminari && collection.out_of_range?)
           pages[:last] = collection.total_pages
           pages[:next] = collection.current_page + 1
         end
@@ -60,7 +60,9 @@ module ApiPagination
       if defined?(Sequel::Dataset) && collection.kind_of?(Sequel::Dataset)
         collection.paginate(options[:page], options[:per_page])
       else
-        collection.paginate(:page => options[:page], :per_page => options[:per_page])
+        supported_options = [:page, :per_page, :total_entries]
+        options = options.dup.keep_if { |k,v| supported_options.include?(k.to_sym) }
+        collection.paginate(options)
       end
     end
 
@@ -79,7 +81,11 @@ module ApiPagination
     end
 
     def detect_model(collection)
-      collection.first.class
+      if collection.respond_to?(:table_name)
+        collection.table_name.classify.constantize
+      else
+        collection.first.class
+      end
     end
   end
 end
